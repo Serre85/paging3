@@ -31,17 +31,17 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = "17"
     }
 }
 
 dependencies {
     //Hilt
-    implementation ("com.google.dagger:hilt-android:2.44")
+    implementation ("com.google.dagger:hilt-android:2.46")
     implementation ("androidx.paging:paging-common-ktx:3.1.1")
-    kapt ("com.google.dagger:hilt-android-compiler:2.44")
+    kapt ("com.google.dagger:hilt-android-compiler:2.46")
     kapt ("androidx.hilt:hilt-compiler:1.2.0")
-    kapt ("com.google.dagger:dagger-compiler:2.44")
+    kapt ("com.google.dagger:dagger-compiler:2.46")
     kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.2.0")
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")

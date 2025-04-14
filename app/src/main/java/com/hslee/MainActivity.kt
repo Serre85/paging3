@@ -1,47 +1,55 @@
 package com.hslee
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.viewModels
-import androidx.annotation.IdRes
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigator
-import androidx.navigation.fragment.NavHostFragment
-import com.hslee.databinding.ActivityMainBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.hslee.ui.compose.DetailScreen
+import com.hslee.ui.compose.ListScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-
-    lateinit var navController: NavController
-
-    val viewModel: MainViewModel by viewModels()
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        binding.model = viewModel
-        binding.lifecycleOwner = this
+        setContent {
+            MaterialTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
 
-        setContentView(binding.root)
-
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-    }
-
-    fun navigateSafe(
-        @IdRes resId: Int,
-        args: Bundle? = null,
-        navOptions: NavOptions? = null,
-        navExtras: Navigator.Extras? = null
-    ) {
-        val action = navController.currentDestination?.getAction(resId) ?: navController.graph.getAction(resId)
-        if (action != null && navController.currentDestination?.id != action.destinationId) {
-            navController.navigate(resId, args, navOptions, navExtras)
+                    NavHost(
+                        navController = navController,
+                        startDestination = "list"
+                    ) {
+                        composable("list") {
+                            ListScreen(
+                                onNavigateToDetail = { id ->
+                                    navController.navigate("detail/$id")
+                                }
+                            )
+                        }
+                        composable("detail/{id}") { backStackEntry ->
+                            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
+                            DetailScreen(
+                                imageId = id,
+                                onNavigateBack = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
